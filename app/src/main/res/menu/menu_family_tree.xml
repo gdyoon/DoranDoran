@@ -2,16 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
-
     <item
         android:id="@+id/menu_family_tree_save"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_menu_family_tree_save"
         android:title="family_tree_save" />
-
-
-
-
 
 </menu>

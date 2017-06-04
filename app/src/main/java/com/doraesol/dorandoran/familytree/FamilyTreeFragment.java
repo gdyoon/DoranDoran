@@ -188,7 +188,7 @@ public class FamilyTreeFragment extends Fragment {
     private String loadCurrentFamilyTreeInfo(){
         String retJsonData;
         SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        retJsonData = mPref.getString(DataConfig.FAMILY_TREE_INFO, DataConfig.EMPTY_DATA);
+        retJsonData = mPref.getString(DataConfig.FAMILY_TREE_INFO, DataConfig.FAMILY_TREE_DEFAULT_DATA);
 
         if(retJsonData.equals(DataConfig.EMPTY_DATA)){
             Log.d("JSONDATA", "invalid Json Data .. ");
