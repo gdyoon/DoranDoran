@@ -2,9 +2,8 @@ package com.doraesol.dorandoran.setting;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.menu.ExpandedMenuView;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +15,12 @@ import android.widget.TextView;
 import com.doraesol.dorandoran.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SettingNoticeActivity extends AppCompatActivity {
+public class SettingNoticeActivity extends AppCompatActivity
+{
 
     @BindView(R.id.elv_notice_list)
     ExpandableListView elv_notice_list;
@@ -54,7 +53,8 @@ public class SettingNoticeActivity extends AppCompatActivity {
         elv_notice_list.setAdapter(adapter);
     }
 
-    class NoticeExpandableListAdapter extends BaseExpandableListAdapter{
+    class NoticeExpandableListAdapter extends BaseExpandableListAdapter
+    {
         Context context;
         int groupLayout = 0;
         int childLayout = 0;

@@ -6,8 +6,7 @@
 package com.doraesol.dorandoran.familytree;
 
 
-import android.content.Context;
-import android.content.ContextWrapper;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,14 +28,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.doraesol.dorandoran.ActivityResultEvent;
 import com.doraesol.dorandoran.BusProvider;
-import com.doraesol.dorandoran.FamilyTreeSearchActivity;
-import com.doraesol.dorandoran.MainActivity;
 import com.doraesol.dorandoran.R;
 import com.doraesol.dorandoran.config.DataConfig;
 import com.doraesol.dorandoran.config.ResultCode;
@@ -45,7 +39,6 @@ import com.doraesol.dorandoran.config.Server;
 import com.github.clans.fab.FloatingActionMenu;
 import com.squareup.otto.Subscribe;
 
-import java.io.File;
 import java.io.IOException;
 
 import butterknife.BindView;
@@ -101,6 +94,7 @@ public class FamilyTreeFragment extends Fragment {
                 //Toast.makeText(getActivity().getApplicationContext(), "불러오기..", Toast.LENGTH_LONG).show();
             }
         }, 1500);
+
 
         return view;
     }

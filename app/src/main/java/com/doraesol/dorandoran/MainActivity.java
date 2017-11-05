@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.doraesol.dorandoran.calendar.CalendarMainFragment;
 import com.doraesol.dorandoran.calendar.IconSpinnerAdapter;
@@ -24,7 +25,7 @@ import com.doraesol.dorandoran.setting.SettingFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
+import butterknife.OnClick;
 
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -151,6 +152,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onDestroy();
     }
 
+    @OnClick(R.id.tv_main_bar_title)
+    public void OnLoginButtonClicked()
+    {
+        Toast.makeText(this, "복구 파일을 불러왔습니다.", Toast.LENGTH_LONG).show();
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

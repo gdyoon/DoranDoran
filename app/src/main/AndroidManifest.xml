@@ -20,8 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
-            android:name="com.google.android.backup.api_key"
-            android:value="AEdPqrEAAAAITwEh1klL5HKcf7tEt846zPwepbvTnYI0botbcg" />
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDqhmXRI2ZB6JDjdT8DO_KUtxpPoNNmkNE" />
 
         <activity
             android:name=".IntroActivity"
@@ -47,31 +47,27 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".map.MapMainActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar" >
-        </activity>
-
+            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
         <activity
             android:name=".map.MapMyRouteActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar" >
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+
             <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
-
         <activity
             android:name=".map.MapCameraGallery"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-
-        </activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
         <activity
             android:name=".map.MapListActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
-        <meta-data
+        <!--<meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCJ6stxPIzCiBGjEJ7AznpO7rlZj0vSv7s" />
+            android:value="AIzaSyCJ6stxPIzCiBGjEJ7AznpO7rlZj0vSv7s" />-->
 
         <activity android:name=".map.MapMainListActivity" />
         <activity android:name=".map.MapMainBookmarkActivity" />
@@ -100,7 +96,7 @@
         </service>
 
         <activity android:name=".familytree.FamilyTreeNodeInfo" />
-        <activity android:name=".familytree.FamilyTreeRestoreActivity"></activity>
+        <activity android:name=".familytree.FamilyTreeRestoreActivity" />
     </application>
 
 </manifest>

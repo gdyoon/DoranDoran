@@ -90,37 +90,7 @@ function initialize()
   if(navigator.geolocation)
    {
      firstTime=true;
-     //navigator.geolocation.getCurrentPosition(success,error);
-     var geolocation = window.navigator.geolocation.watchPosition( 
-        function(position)
-        {
-          flag = true;
-      curLat=position.coords.latitude;
-         curLng=position.coords.longitude;
-         pos = new google.maps.LatLng(curLat,curLng);
-         if(firstTime){
-             marker = new google.maps.Marker
-             ({
-                map: map,
-                position: pos
-             });
-         reverseGeocode(curLat,curLng);
-         }
-
-         if (flag = true) {path.push(pos);}
-         map.setCenter(pos);
-        }, function()
-        {
-        },{
-          maximumAge: 250,
-          enableHighAccuracy: true
-        }
-      );
-     window.setTimeout( function () {
-            window.navigator.geolocation.clearWatch( geolocation ) 
-        }, 
-        5000 //stop checking after 5 seconds
-    );
+     navigator.geolocation.getCurrentPosition(success,error);
   }else 
   {
     handleNoGeolocation(false);
@@ -128,12 +98,6 @@ function initialize()
 
  
 }
-
-window.setTimeout( function () {
-        initialize();
-    }, 
-    30000 //check every 30 seconds
-);
 
 function getMylocation()
 {

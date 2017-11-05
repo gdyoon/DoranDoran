@@ -27,8 +27,8 @@ public class CmtBoardFragment extends Fragment {
 
     ArrayList<Cmt.Post> cmtPostList;
     CmtViewAdpater cmtViewAdpater;
-    @BindView(R.id.fam_cmt)         FloatingActionMenu fam_cmt;
-    @BindView(R.id.fab_cmt_write)   FloatingActionButton fab_cmt_write;
+    /*@BindView(R.id.fam_cmt)         FloatingActionMenu fam_cmt;
+    @BindView(R.id.fab_cmt_write)   FloatingActionButton fab_cmt_write;*/
 
 
     public CmtBoardFragment() {
@@ -54,7 +54,7 @@ public class CmtBoardFragment extends Fragment {
         cmtViewAdpater = new CmtViewAdpater();
         recyclerView.setAdapter(cmtViewAdpater);
         ButterKnife.bind(this, view);
-        fam_cmt.setClosedOnTouchOutside(true);
+       /* fam_cmt.setClosedOnTouchOutside(true);*/
 
         return view;
     }
@@ -116,12 +116,12 @@ public class CmtBoardFragment extends Fragment {
         }
     }
 
-    @OnClick(R.id.fab_cmt_write)
+    /*@OnClick(R.id.fab_cmt_write)
     public void onFabButtonClicked(View view){
         switch(view.getId()){
             case R.id.fab_cmt_write:
                 startActivity(new Intent(getActivity(), CmtBoardWriteActivity.class));
                 break;
         }
-    }
+    }*/
 }

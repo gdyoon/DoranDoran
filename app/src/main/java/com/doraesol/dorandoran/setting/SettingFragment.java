@@ -12,7 +12,6 @@ import android.widget.RelativeLayout;
 import com.doraesol.dorandoran.LoginActivity;
 import com.doraesol.dorandoran.R;
 
-import butterknife.BindDimen;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -48,7 +47,8 @@ public class SettingFragment extends Fragment {
               R.id.rl_setting_notice,
               R.id.rl_setting_alarm,
               R.id.rl_setting_logout})
-    public void OnClick(View view){
+    public void OnClick(View view)
+    {
         switch(view.getId())
         {
             case R.id.rl_setting_mypage:
