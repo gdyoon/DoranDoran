@@ -55,7 +55,6 @@ public class FamilyTreeRestoreActivity extends AppCompatActivity {
         lv_family_tree_restore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(getApplicationContext(), ""+position, Toast.LENGTH_SHORT).show();
                 showConfirmDialog(position);
             }
         });

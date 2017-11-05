@@ -17,6 +17,7 @@ public class IntroActivity extends AppCompatActivity
         setContentView(R.layout.activity_intro);
         ImageView iv_title = (ImageView) findViewById(R.id.iv_title) ;
         iv_title.setImageResource(R.drawable.img_title_intro);
+
         new Handler().postDelayed(new Runnable()
         {
             @Override
