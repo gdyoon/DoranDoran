@@ -12,6 +12,8 @@ public class Server {
     public static final String SEND_MESSAGE_TO_USER = SERVER_CONNECTION + "send_message.php";
     public static final String UPLOAD_PROFILE_IMAGE = SERVER_CONNECTION + "upload_profile_img.php";
     public static final String CONNETION_FAMILYTREE_UI = SERVER_CONNECTION + "familytree/index.html";
+    public static final String ROUTE_SAVE = SERVER_CONNECTION + "route_save.php";
+    public static final String ROUTE_LOAD = SERVER_CONNECTION + "route_load.php";
 
     // declare server request code..
     public static final String REQUEST_USER_FAMILYTREE = "1000";

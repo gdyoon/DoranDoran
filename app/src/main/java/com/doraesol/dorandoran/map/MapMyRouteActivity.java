@@ -16,6 +16,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -38,6 +39,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.doraesol.dorandoran.R;
+import com.doraesol.dorandoran.config.ResultCode;
+import com.doraesol.dorandoran.config.Server;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -53,6 +56,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +68,12 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class MapMyRouteActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -82,6 +95,7 @@ public class MapMyRouteActivity extends AppCompatActivity
     private LatLng endLatLng = new LatLng(0, 0);        //polyline 끝점
     private List<Polyline> polylines;
     private Marker marker;
+
     //갤러리
     //private ImageView iv_map_randmark;
     final int REQUEST_PICTURE = 1000;
@@ -90,6 +104,7 @@ public class MapMyRouteActivity extends AppCompatActivity
     private String str;
     private Uri uri;
     private Bitmap bitmap;
+
     //디폴트 위치, Seoul
     private static final LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
     private static final String TAG = "googlemap";
@@ -99,6 +114,10 @@ public class MapMyRouteActivity extends AppCompatActivity
     private static final int FASTEST_UPDATE_INTERVAL_MS = 1000; // 1초
     private AppCompatActivity mActivity = null;
     boolean askPermissionOnceAgain = false;
+
+    // GeoJsonData
+    ArrayList<String> placeList = new ArrayList<>();
+    private static String jsonLatlng= "";
 
     @BindView(R.id.bt_map_recording) Button bt_map_recording;
     @BindView(R.id.bt_map_save) Button bt_map_save;
@@ -120,7 +139,6 @@ public class MapMyRouteActivity extends AppCompatActivity
         startLocationService();
         polylines = new ArrayList<>();
 
-
     }
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -136,11 +154,24 @@ public class MapMyRouteActivity extends AppCompatActivity
             case R.id.bt_map_recording:
                 changeWalkState();
                 String walk = "Walkstate : " + walkState;
-                Log.i("walkstate", walk);
                 break;
             case R.id.bt_map_save:
                 Toast.makeText(MapMyRouteActivity.this, "경로가 저장 되었습니다.", Toast.LENGTH_SHORT).show();
-                Log.i("btclick", "click!");
+                JSONObject obj = new JSONObject();
+                try {
+                    JSONArray jArray = new JSONArray();//배열이 필요할때
+                    for (int i = 0; i < placeList.size(); i++)//배열
+                    {
+                        JSONObject sObject = new JSONObject();//배열 내에 들어갈 json
+                        sObject.put("data", placeList.get(i));
+                        jArray.put(sObject);
+                    }
+                    obj.put("data", jArray);//배열을 넣음
+                    System.out.println(obj.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.v("PLZ", obj.toString());
                 break;
         }
     }
@@ -256,7 +287,6 @@ public class MapMyRouteActivity extends AppCompatActivity
                 .width(4)
                 .color(Color.RED)
                 .geodesic(true);
-
         polylines.add(mGoogleMap.addPolyline(options));
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLatLng, 17));
     }
@@ -523,6 +553,9 @@ public class MapMyRouteActivity extends AppCompatActivity
                 endLatLng = new LatLng(latitude, longtitude);        //현재 위치를 끝점으로 설정
                 drawPath();                                          //polyline 그리기
                 startLatLng = new LatLng(latitude, longtitude);      //시작점을 끝점으로 다시 설정
+                jsonLatlng = "" + startLatLng;
+                placeList.add(jsonLatlng);
+
             }
         }
 
@@ -827,14 +860,58 @@ public class MapMyRouteActivity extends AppCompatActivity
         builder.create().show();
     }
 
-
-
-
-
-
-
-
-
     @Override
     public void invoke(String origin, boolean allow, boolean retain) {}
+
+    class route_save extends AsyncTask<String,Void,Integer>
+    {
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String data = params[0];
+            String name = params[0];
+
+            OkHttpClient client = new OkHttpClient();
+
+            RequestBody body = new FormBody.Builder()
+                    .add("data", data)
+                    .add("name", name)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(Server.ROUTE_SAVE)
+                    .post(body)
+                    .build();
+
+            try {
+                Response response = client.newCall(request).execute();
+                String returnValue = response.body().string();
+                int resultCode = Integer.parseInt(returnValue);
+
+                return resultCode;
+
+
+            }
+            catch(IOException ex)
+            {
+                ex.printStackTrace();
+            }
+
+            return ResultCode.ACK_RESULT_FAIL;
+        }
+
+        @Override
+        protected void onPostExecute(Integer resultCode) {
+            super.onPostExecute(resultCode);
+
+            if(resultCode == ResultCode.ACK_RESULT_SUCCESS){
+                Toast.makeText(getApplicationContext(), "저장 완료", Toast.LENGTH_LONG).show();
+            }
+            else if(resultCode == ResultCode.ACK_RESULT_FAIL){
+                Toast.makeText(getApplicationContext(), "저장 실패", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
 }

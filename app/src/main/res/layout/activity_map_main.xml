@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -69,48 +69,65 @@
                 android:layout_weight="0.9"
                 android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-            <com.github.clans.fab.FloatingActionMenu
-                android:id="@+id/fam_map_menu"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:paddingRight="10dp"
-                android:paddingBottom="10dp"
-                android:paddingLeft="10dp"
-                fab:menu_icon="@drawable/ic_star"
-                fab:menu_labels_ellipsize="end"
-                fab:menu_labels_singleLine="true"
-                fab:menu_colorNormal="#54C242"
-                fab:menu_colorPressed="#2E7D32"
-                fab:menu_colorRipple="#1B5E20"
-                fab:menu_backgroundColor="#CCb7b7b7">
 
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/fab_map_insert_list"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/img_map_list"
-                    fab:fab_label="경로 목록"
-                    style="@style/MenuButtonsSmall.Green"/>
-
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/fab_map_insert_recording"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/img_map_recording"
-                    fab:fab_label="녹화 하기"
-                    style="@style/MenuButtonsSmall.Green"/>
-
-            </com.github.clans.fab.FloatingActionMenu>
         </RelativeLayout>
 
-        <android.support.design.widget.CoordinatorLayout
-            android:id="@+id/myCoordinatorLayout"
+        <HorizontalScrollView
+            android:id="@+id/hsv_shared_user_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:background="#f0f0f0">
+
+            <LinearLayout
+                android:id="@+id/ll_shared_user_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginLeft="20dp">
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+    </LinearLayout>
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/myCoordinatorLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.1">
+    </android.support.design.widget.CoordinatorLayout>
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fam_map_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        fab:menu_icon="@drawable/ic_star"
+        fab:menu_labels_ellipsize="end"
+        fab:menu_labels_singleLine="true"
+        fab:menu_colorNormal="#54C242"
+        fab:menu_colorPressed="#2E7D32"
+        fab:menu_colorRipple="#1B5E20"
+        fab:menu_backgroundColor="#CCb7b7b7">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_map_insert_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.1">
-        </android.support.design.widget.CoordinatorLayout>
+            android:src="@drawable/img_map_list"
+            fab:fab_label="경로 목록"
+            style="@style/MenuButtonsSmall.Green"/>
 
-    </LinearLayout>
-</LinearLayout>
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_map_insert_recording"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/img_map_recording"
+            fab:fab_label="녹화 하기"
+            style="@style/MenuButtonsSmall.Green"/>
+
+    </com.github.clans.fab.FloatingActionMenu>
+</RelativeLayout>

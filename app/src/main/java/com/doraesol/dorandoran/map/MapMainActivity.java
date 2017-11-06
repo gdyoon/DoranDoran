@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -19,6 +20,8 @@ import android.os.Bundle;
 import com.doraesol.dorandoran.MainActivity;
 import com.doraesol.dorandoran.R;
 import com.doraesol.dorandoran.calendar.CalendarMainFragment;
+import com.doraesol.dorandoran.config.ResultCode;
+import com.doraesol.dorandoran.config.Server;
 import com.doraesol.dorandoran.map.MapMainFragment;
 import com.doraesol.dorandoran.setting.SettingFragment;
 import com.doraesol.dorandoran.social.CmtBoardFragment;
@@ -26,6 +29,11 @@ import com.doraesol.dorandoran.social.CmtBoardFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -53,6 +61,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +85,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -113,13 +126,18 @@ public class MapMainActivity extends AppCompatActivity
     private AppCompatActivity mActivity;
     boolean askPermissionOnceAgain = false;
 
+    //맵 데이터 존재여부
+    boolean isData = false;
+
     @BindView(R.id.iv_map_search) ImageButton iv_map_search;
     @BindView(R.id.fam_map_menu)           FloatingActionMenu fam_map_menu;
     @BindView(R.id.fab_map_insert_recording)  FloatingActionButton fab_map_insert_recording;
     @BindView(R.id.fab_map_insert_list)  FloatingActionButton fab_map_insert_list;
+    @BindView(R.id.ll_shared_user_list) LinearLayout ll_shared_user_list;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -665,6 +683,54 @@ public class MapMainActivity extends AppCompatActivity
         }
     }
 
+    class route_load extends AsyncTask<String,Void,String>
+    {
 
+        @Override
+        protected String doInBackground(String... params) {
+            String data = params[0];
+            String name = params[0];
+
+            OkHttpClient client = new OkHttpClient();
+
+            RequestBody body = new FormBody.Builder()
+                    .add("data", data)
+                    .add("name", name)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(Server.ROUTE_LOAD)
+                    .post(body)
+                    .build();
+
+            String returnValue = "1001";
+
+            try {
+                Response response = client.newCall(request).execute();
+                returnValue = response.body().string();
+
+                return returnValue;
+
+
+            }
+            catch(IOException ex)
+            {
+                ex.printStackTrace();
+            }
+
+            return returnValue;
+        }
+
+        @Override
+        protected void onPostExecute(String resultCode) {
+            super.onPostExecute(resultCode);
+
+           if(resultCode.equals("1001"))
+               return;
+
+
+
+        }
+    }
 
 }
