@@ -27,7 +27,7 @@
                 android:layout_width="320dp"
                 android:layout_height="40dp"
                 android:src="@drawable/img_menu_title"
-                android:id="@+id/img_title"
+                android:id="@+id/iv_map_title"
                 android:visibility="visible"/>
 
             <fragment

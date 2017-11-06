@@ -3,6 +3,7 @@ package com.doraesol.dorandoran;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @BindView(R.id.et_login_pw)     EditText et_login_pw;
     @BindView(R.id.btn_login_google) SignInButton btn_login_google;
     GoogleApiClient mGoogleApiClient;
+    boolean isLoginSucceed;
+
     private static final int RESOLVE_CONNECTION_REQUEST_CODE = 1;
 
     boolean doubleBackToExitPressedOnce = false;
@@ -53,31 +56,45 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        InitalizemGoogleApiClient();
+        InitializemGoogleApiClient();
+        isLoginSucceed = false;
     }
 
     //메인화면으로
     @OnClick(R.id.bt_login)
     public void OnLoginButtonClicked()
     {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String user_id = et_login_id.getText().toString();
+        String user_pw = et_login_pw.getText().toString();
+        String fcmToken = FirebaseInstanceId.getInstance().getToken();
+        SharedPreferences prefs
+                = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("user_id", et_login_id.getText().toString());
+        editor.putString("user_id", user_id);
         editor.commit();
 
-        String id = et_login_id.getText().toString();
-        String fcmToken = FirebaseInstanceId.getInstance().getToken();
         RegisterFcmTokenTask registerFcmTokenTask = new RegisterFcmTokenTask();
-        registerFcmTokenTask.execute(id, fcmToken);
+        registerFcmTokenTask.execute(user_id, fcmToken);
 
-        Log.d(LOG_TAG, "token : " + fcmToken);
+        new UserLoginTask().execute(user_id, user_pw);
 
-        Intent intent = new Intent(
-                getApplicationContext(), // 현재 화면의 제어권자
-                MenuActivity.class); // 다음 넘어갈 클래스 지정
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent); // 다음 화면으로 넘어간다
-        finish();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(isLoginSucceed){
+                    Intent intent = new Intent(
+                            getApplicationContext(),
+                            MenuActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),
+                            "로그인 실패", Toast.LENGTH_LONG).show();
+                }
+            }
+        }, 500);
     }
 
     @OnClick(R.id.bt_signup)
@@ -146,7 +163,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
 
-    private void InitalizemGoogleApiClient(){
+    private void InitializemGoogleApiClient(){
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder( GoogleSignInOptions.DEFAULT_SIGN_IN )
                 // 필요한 항목이 있으면 아래에 추가
                 .requestEmail()
@@ -169,10 +186,48 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
 
+    class UserLoginTask extends AsyncTask<String, Void, String>{
 
+        @Override
+        protected String doInBackground(String... params) {
+            String user_id = params[0];
+            String user_pw = params[1];
+
+            OkHttpClient client = new OkHttpClient();
+
+            RequestBody body = new FormBody.Builder()
+                    .add("user_id", user_id)
+                    .add("user_pw", user_pw)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(Server.USER_LOGIN)
+                    .post(body)
+                    .build();
+
+            try {
+                Response response = client.newCall(request).execute();
+                String returnValue = response.body().string();
+                return returnValue;
+            }
+            catch(IOException ex)
+            {
+                ex.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String paramValue) {
+            super.onPostExecute(paramValue);
+            if(paramValue.equals("1")) {
+                isLoginSucceed = true;
+            }
+        }
+    }
 
     class RegisterFcmTokenTask extends AsyncTask<String, Void, Void>{
-
         @Override
         protected Void doInBackground(String... params) {
             String id = params[0];

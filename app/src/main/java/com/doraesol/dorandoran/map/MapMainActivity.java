@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -61,6 +62,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -85,16 +87,19 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Handler;
 
 
 public class MapMainActivity extends AppCompatActivity
@@ -110,6 +115,7 @@ public class MapMainActivity extends AppCompatActivity
     private Marker searchMarker = null;
     private LatLng latLng = null;
     private Geocoder geocoder = null;
+    private List<Polyline> polylines;
 
     private Marker destination;
 
@@ -122,14 +128,14 @@ public class MapMainActivity extends AppCompatActivity
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 2002;
     private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
     private static final int FASTEST_UPDATE_INTERVAL_MS = 1000; // 1초
-
     private AppCompatActivity mActivity;
     boolean askPermissionOnceAgain = false;
 
     //맵 데이터 존재여부
-    boolean isData = false;
+    String name = "";
 
     @BindView(R.id.iv_map_search) ImageButton iv_map_search;
+    @BindView(R.id.iv_map_title) ImageView iv_map_title;
     @BindView(R.id.fam_map_menu)           FloatingActionMenu fam_map_menu;
     @BindView(R.id.fab_map_insert_recording)  FloatingActionButton fab_map_insert_recording;
     @BindView(R.id.fab_map_insert_list)  FloatingActionButton fab_map_insert_list;
@@ -180,6 +186,16 @@ public class MapMainActivity extends AppCompatActivity
                 Log.i(TAG, "An error occurred: " + status);
             }
         });
+
+        polylines = new ArrayList<>();
+
+        Intent intent= getIntent();
+        name = intent.getStringExtra("user_name");
+
+        Log.d("JJY", name);
+
+        Route_load route_load = new Route_load();
+        route_load.execute(name);
 
     }
 
@@ -245,7 +261,7 @@ public class MapMainActivity extends AppCompatActivity
         iv_map_search.setVisibility(View.VISIBLE);
     }
 
-    @OnClick({R.id.fab_map_insert_recording, R.id.fab_map_insert_list})
+    @OnClick({R.id.fab_map_insert_recording, R.id.fab_map_insert_list, R.id.iv_map_title})
     public void OnFabMapClicked(View view)
     {
         switch (view.getId())
@@ -255,6 +271,7 @@ public class MapMainActivity extends AppCompatActivity
                 Intent intent1 = new Intent(
                         getApplicationContext(), // 현재 화면의 제어권자
                         MapMyRouteActivity.class);// 다음 넘어갈 클래스 지정
+                intent1.putExtra("user_name", name);
                 startActivity(intent1); // 다음 화면으로 넘어간다
                 break;
 
@@ -264,6 +281,8 @@ public class MapMainActivity extends AppCompatActivity
                         MapListActivity.class);// 다음 넘어갈 클래스 지정
                 startActivity(intent2); // 다음 화면으로 넘어간다
                 break;
+
+
         }
     }
 
@@ -683,18 +702,16 @@ public class MapMainActivity extends AppCompatActivity
         }
     }
 
-    class route_load extends AsyncTask<String,Void,String>
+    class Route_load extends AsyncTask<String,Void,String>
     {
 
         @Override
         protected String doInBackground(String... params) {
-            String data = params[0];
             String name = params[0];
 
             OkHttpClient client = new OkHttpClient();
 
             RequestBody body = new FormBody.Builder()
-                    .add("data", data)
                     .add("name", name)
                     .build();
 
@@ -703,11 +720,10 @@ public class MapMainActivity extends AppCompatActivity
                     .post(body)
                     .build();
 
-            String returnValue = "1001";
 
             try {
                 Response response = client.newCall(request).execute();
-                returnValue = response.body().string();
+                String returnValue = response.body().string();
 
                 return returnValue;
 
@@ -718,19 +734,57 @@ public class MapMainActivity extends AppCompatActivity
                 ex.printStackTrace();
             }
 
-            return returnValue;
+            return null;
         }
 
         @Override
         protected void onPostExecute(String resultCode) {
             super.onPostExecute(resultCode);
-
+            Log.d("JJY", resultCode);
            if(resultCode.equals("1001"))
                return;
+
+            JSONParser jsonParser = new JSONParser();
+            try {
+                JSONObject jsonObject = (JSONObject)jsonParser.parse(resultCode);
+                JSONArray dataArray = (JSONArray) jsonObject.get("data");
+
+
+                        for (int i = 1; i < dataArray.size(); i++) {
+                            JSONObject startObject = (JSONObject) dataArray.get(i-1);
+                            JSONObject endObject = (JSONObject) dataArray.get(i);
+                            Double startlat = Double.parseDouble(startObject.get("lat").toString());
+                            Double startlng = Double.parseDouble(startObject.get("lan").toString());
+
+                            Double endlat = Double.parseDouble(endObject.get("lat").toString());
+                            Double endlng = Double.parseDouble(endObject.get("lan").toString());
+
+                            LatLng start = new LatLng(startlat, startlng);
+                            LatLng end = new LatLng(endlat, endlng);
+
+
+                            drawPath(end, start);
+
+
+                        }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
 
 
         }
+    }
+    public void drawPath(LatLng startLatLng, LatLng endLatLng){        //polyline을 그려주는 메소드
+        PolylineOptions options = new PolylineOptions()
+                .add(startLatLng)
+                .add(endLatLng)
+                .width(4)
+                .color(Color.RED)
+                .geodesic(true);
+        polylines.add(mGoogleMap.addPolyline(options));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLatLng, 17));
     }
 
 }

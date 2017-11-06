@@ -93,7 +93,7 @@ public class FamilyTreeNodeInfo extends AppCompatActivity {
     public void onLayoutNodeInfoClicked(View paramView){
         int options = -1;
         switch (paramView.getId()){
-            //case R.id.ll_family_tree_info_id:       options = 0;    break;
+            case R.id.ll_family_tree_info_id:       options = 0;    break;
             case R.id.ll_family_tree_info_name:     options = 1;    break;
             case R.id.ll_family_tree_info_age:      options = 2;    break;
             case R.id.ll_family_tree_info_gender:   options = 3;    break;
@@ -101,7 +101,6 @@ public class FamilyTreeNodeInfo extends AppCompatActivity {
             case R.id.ll_family_tree_info_phone:    options = 5;    break;
             case R.id.ll_family_tree_info_birth:    options = 6;    break;
         }
-
         showEditDialog(options);
     }
 
@@ -117,8 +116,6 @@ public class FamilyTreeNodeInfo extends AppCompatActivity {
 
         switch (paramView.getId()){
             case R.id.iv_family_tree_info_confirm:
-
-
                     Intent intent = new Intent();
                     intent.putExtra("id", id);
                     intent.putExtra("name", name);
@@ -133,6 +130,7 @@ public class FamilyTreeNodeInfo extends AppCompatActivity {
                         Log.d(LOG_TAG, "pictureByteArray : " + pictureByteArray);
                     }
 
+                    new saveNodePathInfo().execute(name);
                     BusProvider.getInstance().post(new ActivityResultEvent(0, ResultCode.ACK_RESULT_SUCCESS, intent));
                     finish();
 
@@ -221,7 +219,47 @@ public class FamilyTreeNodeInfo extends AppCompatActivity {
         }
     }
 
+    class saveNodePathInfo extends AsyncTask<String, Void, Integer> {
 
+        @Override
+        protected Integer doInBackground(String... params) {
+            String user_name = params[0];
+
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = new FormBody.Builder()
+                    .add("user_name", user_name)
+                    .build();
+
+            //request
+            Request request = new Request.Builder()
+                    .url(Server.USER_INSERT_PATH_NAME)
+                    .post(body)
+                    .build();
+
+            try {
+                Response response = client.newCall(request).execute();
+                int returnValue = Integer.parseInt(response.body().string());
+                return returnValue;
+            }
+            catch(IOException ex)
+            {
+                ex.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer resultCode) {
+            super.onPostExecute(resultCode);
+
+            if(resultCode == ResultCode.ACK_RESULT_SUCCESS){
+                printToast("이름 등록");
+            }
+            else if(resultCode == ResultCode.ACK_RESULT_FAIL){
+                printToast("이름 등록 실패");
+            }
+        }
+    }
 
     class upLoadPictureAsyncTask extends AsyncTask<String, Void, Integer> {
 
@@ -361,15 +399,15 @@ public class FamilyTreeNodeInfo extends AppCompatActivity {
     @OnClick(R.id.fab_family_tree_info_graves)
     public void onGoMap()
     {
-        printToast("묘지 클릭");
+        String name     = tv_family_tree_info_name.getText().toString();
         Intent intent = new Intent(
-                getApplicationContext(), // 현재 화면의 제어권자
-                MapMainActivity.class); // 다음 넘어갈 클래스 지정
-        startActivity(intent); // 다음 화면으로 넘어간다
+                getApplicationContext(),
+                MapMainActivity.class);
+        intent.putExtra("user_name", name);
+        startActivity(intent);
     }
+
     private void printToast(String msg){
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
-
-
 }

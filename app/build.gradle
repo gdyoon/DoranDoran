@@ -51,6 +51,7 @@ dependencies {
     compile 'gun0912.ted:tedpermission:1.0.3'
     compile 'com.scottyab:aescrypt:0.0.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.googlecode.json-simple:json-simple:1.1'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.5.1'
 }

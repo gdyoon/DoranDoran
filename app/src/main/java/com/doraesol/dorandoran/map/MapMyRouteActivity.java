@@ -116,8 +116,13 @@ public class MapMyRouteActivity extends AppCompatActivity
     boolean askPermissionOnceAgain = false;
 
     // GeoJsonData
-    ArrayList<String> placeList = new ArrayList<>();
-    private static String jsonLatlng= "";
+    ArrayList<String> latList = new ArrayList<>();
+    ArrayList<String> langList = new ArrayList<>();
+    private static String jsonLat= "";
+    private static String jsonLang= "";
+
+    // name load
+    String name = "";
 
     @BindView(R.id.bt_map_recording) Button bt_map_recording;
     @BindView(R.id.bt_map_save) Button bt_map_save;
@@ -139,6 +144,9 @@ public class MapMyRouteActivity extends AppCompatActivity
         startLocationService();
         polylines = new ArrayList<>();
 
+        Intent intent = getIntent();
+        name = intent.getStringExtra("user_name");
+
     }
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -156,22 +164,27 @@ public class MapMyRouteActivity extends AppCompatActivity
                 String walk = "Walkstate : " + walkState;
                 break;
             case R.id.bt_map_save:
-                Toast.makeText(MapMyRouteActivity.this, "경로가 저장 되었습니다.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MapMyRouteActivity.this, "경로가 저장 되었습니다.", Toast.LENGTH_SHORT).show();
                 JSONObject obj = new JSONObject();
                 try {
                     JSONArray jArray = new JSONArray();//배열이 필요할때
-                    for (int i = 0; i < placeList.size(); i++)//배열
+                    for (int i = 0; i < latList.size(); i++)//배열
                     {
                         JSONObject sObject = new JSONObject();//배열 내에 들어갈 json
-                        sObject.put("data", placeList.get(i));
+                        sObject.put("lat", latList.get(i));
+                        sObject.put("lan", langList.get(i));
                         jArray.put(sObject);
                     }
                     obj.put("data", jArray);//배열을 넣음
                     System.out.println(obj.toString());
+                    Route_save save = new Route_save();
+                    save.execute(obj.toString(), name);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                Log.v("PLZ2", name);
                 Log.v("PLZ", obj.toString());
+
                 break;
         }
     }
@@ -280,7 +293,7 @@ public class MapMyRouteActivity extends AppCompatActivity
 
     }
 
-    private void drawPath(){        //polyline을 그려주는 메소드
+    public void drawPath(){        //polyline을 그려주는 메소드
         PolylineOptions options = new PolylineOptions()
                 .add(startLatLng)
                 .add(endLatLng)
@@ -553,8 +566,10 @@ public class MapMyRouteActivity extends AppCompatActivity
                 endLatLng = new LatLng(latitude, longtitude);        //현재 위치를 끝점으로 설정
                 drawPath();                                          //polyline 그리기
                 startLatLng = new LatLng(latitude, longtitude);      //시작점을 끝점으로 다시 설정
-                jsonLatlng = "" + startLatLng;
-                placeList.add(jsonLatlng);
+                jsonLat = "" + latitude;
+                jsonLang = "" + longtitude;
+                latList.add(jsonLat);
+                langList.add(jsonLang);
 
             }
         }
@@ -863,13 +878,13 @@ public class MapMyRouteActivity extends AppCompatActivity
     @Override
     public void invoke(String origin, boolean allow, boolean retain) {}
 
-    class route_save extends AsyncTask<String,Void,Integer>
+    class Route_save extends AsyncTask<String,Void,String>
     {
 
         @Override
-        protected Integer doInBackground(String... params) {
+        protected String doInBackground(String... params) {
             String data = params[0];
-            String name = params[0];
+            String name = params[1];
 
             OkHttpClient client = new OkHttpClient();
 
@@ -886,9 +901,8 @@ public class MapMyRouteActivity extends AppCompatActivity
             try {
                 Response response = client.newCall(request).execute();
                 String returnValue = response.body().string();
-                int resultCode = Integer.parseInt(returnValue);
 
-                return resultCode;
+                return returnValue;
 
 
             }
@@ -897,18 +911,22 @@ public class MapMyRouteActivity extends AppCompatActivity
                 ex.printStackTrace();
             }
 
-            return ResultCode.ACK_RESULT_FAIL;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(Integer resultCode) {
+        protected void onPostExecute(String resultCode) {
             super.onPostExecute(resultCode);
 
-            if(resultCode == ResultCode.ACK_RESULT_SUCCESS){
+            Log.v("RC2", resultCode);
+            if(resultCode.equals("1000"))
+            {
                 Toast.makeText(getApplicationContext(), "저장 완료", Toast.LENGTH_LONG).show();
             }
-            else if(resultCode == ResultCode.ACK_RESULT_FAIL){
+            else if(resultCode.equals("1001")){
                 Toast.makeText(getApplicationContext(), "저장 실패", Toast.LENGTH_LONG).show();
+            }else if(resultCode.equals("1002")){
+                Toast.makeText(getApplicationContext(), "연결 실패", Toast.LENGTH_LONG).show();
             }
         }
     }
