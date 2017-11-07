@@ -2,9 +2,12 @@ package com.doraesol.dorandoran.familytree;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.gun0912.tedpermission.PermissionListener;
@@ -41,12 +44,10 @@ public class FamilyTreeBackupHelper {
         registerToMediaScanner(backupDir);
 
         if(backupDir.exists()) {
-
             for(int i=0; i<fileList.length; i++) {
                 registerToMediaScanner(fileList[i]);
                 Log.d(LOG_TAG, fileList[i].getPath());
             }
-
         }
         else {
             Log.d(LOG_TAG, "디렉토리를 먼저 생성해야 합니다.");
@@ -56,9 +57,9 @@ public class FamilyTreeBackupHelper {
     }
 
     public boolean saveBackupFile(String paramBackupData){
-        checkStoragePermission();
+        //checkStoragePermission();
 
-      /*  if(getExternalStorageState()){
+        /*if(getExternalStorageState()){
             Log.d(LOG_TAG, "외부 저장소가 없습니다.");
             return false;
         }*/
@@ -123,7 +124,7 @@ public class FamilyTreeBackupHelper {
         }
     }
 
-    private void checkStoragePermission(){
+    public void checkStoragePermission(){
         new TedPermission(context)
                 .setPermissionListener(permissionlistener)
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")

@@ -153,8 +153,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @OnClick(R.id.tv_main_bar_title)
-    public void OnLoginButtonClicked()
-    {
+    public void OnLoginButtonClicked() {
         Toast.makeText(this, "복구 파일을 불러왔습니다.", Toast.LENGTH_LONG).show();
     }
     @Override

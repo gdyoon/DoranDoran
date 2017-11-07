@@ -6,14 +6,17 @@
 package com.doraesol.dorandoran.familytree;
 
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -270,19 +273,28 @@ public class FamilyTreeFragment extends Fragment {
 
             // 가계도 백업
             case R.id.fab_familytree_backup:
-                FamilyTreeBackupHelper familyTreeBackupHelper =
+                FamilyTreeBackupHelper backupHelper =
                         new FamilyTreeBackupHelper(getContext());
+                backupHelper.checkStoragePermission();
+                int storagePermissionCheck = ContextCompat.checkSelfPermission(
+                        getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                if(storagePermissionCheck == PackageManager.PERMISSION_DENIED){
+                    return;
+                }
+
+
                 boolean isSucceed = false;
                 String backupData = loadCurrentFamilyTreeInfo();
 
                 // AES256 메세지 암, 복호화 - 패스워드 지정 필요
-                String encryptedData = familyTreeBackupHelper.encryptedMessageFromAES256("1111", backupData);
+                String encryptedData = backupHelper.encryptedMessageFromAES256("1111", backupData);
 
                 Log.d(LOG_TAG, "가계도 백업 원본 데이터 : " + backupData);
                 Log.d(LOG_TAG, "가계도 백업 암호화 데이터 : " + encryptedData);
 
 
-                isSucceed = familyTreeBackupHelper.saveBackupFile(encryptedData);
+                isSucceed = backupHelper.saveBackupFile(encryptedData);
 
                 if(isSucceed){
                     Toast.makeText(getActivity().getApplicationContext(), "데이터 백업 성공", Toast.LENGTH_SHORT).show();
@@ -291,7 +303,7 @@ public class FamilyTreeFragment extends Fragment {
                     Toast.makeText(getActivity().getApplicationContext(), "데이터 백업 실패", Toast.LENGTH_SHORT).show();
                 }
 
-                familyTreeBackupHelper.getFileNameList();
+                backupHelper.getFileNameList();
                 break;
 
             case R.id.fab_familytree_restore:
