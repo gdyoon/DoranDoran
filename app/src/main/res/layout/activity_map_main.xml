@@ -113,13 +113,6 @@
         fab:menu_colorRipple="#1B5E20"
         fab:menu_backgroundColor="#CCb7b7b7">
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_map_insert_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/img_map_list"
-            fab:fab_label="경로 목록"
-            style="@style/MenuButtonsSmall.Green"/>
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_map_insert_recording"

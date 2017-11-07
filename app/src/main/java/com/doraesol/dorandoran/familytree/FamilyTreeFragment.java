@@ -307,6 +307,15 @@ public class FamilyTreeFragment extends Fragment {
                 break;
 
             case R.id.fab_familytree_restore:
+                FamilyTreeBackupHelper backupHelper1 =
+                        new FamilyTreeBackupHelper(getContext());
+                backupHelper1.checkStoragePermission();
+                int storagePermissionCheck1 = ContextCompat.checkSelfPermission(
+                        getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                if(storagePermissionCheck1 == PackageManager.PERMISSION_DENIED){
+                    return;
+                }
                 Intent intent = new Intent(getContext(), FamilyTreeRestoreActivity.class);
                 startActivity(intent);
                 break;

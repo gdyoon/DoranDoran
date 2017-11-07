@@ -138,7 +138,6 @@ public class MapMainActivity extends AppCompatActivity
     @BindView(R.id.iv_map_title) ImageView iv_map_title;
     @BindView(R.id.fam_map_menu)           FloatingActionMenu fam_map_menu;
     @BindView(R.id.fab_map_insert_recording)  FloatingActionButton fab_map_insert_recording;
-    @BindView(R.id.fab_map_insert_list)  FloatingActionButton fab_map_insert_list;
     @BindView(R.id.ll_shared_user_list) LinearLayout ll_shared_user_list;
 
     @Override
@@ -261,7 +260,7 @@ public class MapMainActivity extends AppCompatActivity
         iv_map_search.setVisibility(View.VISIBLE);
     }
 
-    @OnClick({R.id.fab_map_insert_recording, R.id.fab_map_insert_list, R.id.iv_map_title})
+    @OnClick(R.id.fab_map_insert_recording)
     public void OnFabMapClicked(View view)
     {
         switch (view.getId())
@@ -274,15 +273,6 @@ public class MapMainActivity extends AppCompatActivity
                 intent1.putExtra("user_name", name);
                 startActivity(intent1); // 다음 화면으로 넘어간다
                 break;
-
-            case R.id.fab_map_insert_list:
-                Intent intent2 = new Intent(
-                        getApplicationContext(), // 현재 화면의 제어권자
-                        MapListActivity.class);// 다음 넘어갈 클래스 지정
-                startActivity(intent2); // 다음 화면으로 넘어간다
-                break;
-
-
         }
     }
 

@@ -94,7 +94,6 @@ public class MapMyRouteActivity extends AppCompatActivity
     private LatLng startLatLng = new LatLng(0, 0);        //polyline 시작점
     private LatLng endLatLng = new LatLng(0, 0);        //polyline 끝점
     private List<Polyline> polylines;
-    private Marker marker;
 
     //갤러리
     //private ImageView iv_map_randmark;
@@ -126,6 +125,7 @@ public class MapMyRouteActivity extends AppCompatActivity
 
     @BindView(R.id.bt_map_recording) Button bt_map_recording;
     @BindView(R.id.bt_map_save) Button bt_map_save;
+    @BindView(R.id.tv_mymap_title) TextView tv_mymap_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -146,6 +146,7 @@ public class MapMyRouteActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         name = intent.getStringExtra("user_name");
+        tv_mymap_title.setText(name);
 
     }
     @Override
@@ -155,13 +156,19 @@ public class MapMyRouteActivity extends AppCompatActivity
     }
 
 
+
     @OnClick({R.id.bt_map_recording, R.id.bt_map_save})
     public void recordsaveButtonClicked(View view)
     {
         switch(view.getId()){
             case R.id.bt_map_recording:
                 changeWalkState();
-                String walk = "Walkstate : " + walkState;
+                if(bt_map_recording.getText().toString().equals("녹화종료")){
+                    bt_map_recording.setText("녹화하기");
+                }
+                else{
+                    bt_map_recording.setText("녹화종료");
+                }
                 break;
             case R.id.bt_map_save:
                 //Toast.makeText(MapMyRouteActivity.this, "경로가 저장 되었습니다.", Toast.LENGTH_SHORT).show();
@@ -182,9 +189,7 @@ public class MapMyRouteActivity extends AppCompatActivity
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.v("PLZ2", name);
-                Log.v("PLZ", obj.toString());
-
+                finish();
                 break;
         }
     }
